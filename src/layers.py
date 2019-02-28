@@ -12,7 +12,7 @@ class Layer(object):
         """ Forward pass returning and storing outputs."""
         raise NotImplementedError()
 
-    def backward_pass(self, back):
+    def backward_pass(self, err):
         """ Backward pass returning and storing errors."""
         raise NotImplementedError()
 
@@ -30,7 +30,7 @@ class DenseLayer(Layer):
         bias: a bias vector [no_units,]
         activation: an activation function object
         input_: stored forward pass input [batch_size, input_size]
-        preactiv: stored forward pass output pre-activation [batch_size, no_units]
+        preactiv: stored pre-activation output [batch_size, no_units]
         E: Calculated pre-activation error TODO? [batch_size, no_units]
     """
 
