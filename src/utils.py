@@ -1,3 +1,4 @@
+""" utils.py: Basic utilities."""
 import numpy as np
 
 def np_str(arr, max_lines=10):

@@ -1,43 +1,54 @@
+""" network.py: Contains Network general model class."""
 import numpy as np
 
 
 class Network(object):
-  """ General Params:
-    X = (batch_size x input_size)
-    y_ = (batch_size x output_size) - 1-hot
-  """
-  def __init__(self, layers, loss):
-    self.layers = layers
-    self.loss = loss
+    """ DNN grouping together multiple layers.
 
-  def forward_pass(self, X):
-    """ Just do a forward pass calculation on the data"""
-    forward = X  # this is the activation of layer l=0
-    for l in self.layers:
-      forward = l.forward_pass(forward)
-    return forward
-
-  def backward_pass(self, Z_L, y_):
-    """ Do a backward pass based on loss function and
-    final layer scores. Populate the layer errors.
+    Attributes:
+        layers: a list of layers.Layer derived objects
+        loss: a loss function object
     """
-    err = self.loss.loss_error(Z_L, y_)
-    for l in reversed(self.layers):
-      err = l.backward_pass(err)
 
-  def sgd_step(self, X, y_, learning_rate):
-    """ Do a gradient step """
-    Z_L = self.forward_pass(X) # This also stores Z values
-    self.backward_pass(Z_L, y_)
+    def __init__(self, layers, loss):
+        self.layers = layers
+        self.loss = loss
 
-    for l in self.layers:
-      l.update_params(learning_rate)
+    def forward_pass(self, input_):
+        """ Forward pass storing layer outputs.
 
-  def classification_error(self, X, y_):
-    """ Classification error (1-0 loss) on batch"""
-    a_L = self.forward_pass(X) # final layer activation
-    y_ = np.array(y_)
-    batch_size = y_.shape[0]
-    return np.sum(y_[np.arange(batch_size),
-                     np.argmax(a_L, axis=1)]) / batch_size
+        Args:
+            input_: network input [batch_size, input_size].
 
+        Returns:
+            output of the neural network [batch_size, output_size]
+            where output_size is the number of units of the final layer.
+        """
+        forward = input_
+        for layer in self.layers:
+            forward = layer.forward_pass(forward)
+        return forward
+
+    def backward_pass(self, out, label):
+        """ Backward pass populating layer errors.
+
+        Args:
+            label: (1-hot) network output [batch_size, output_size].
+        """
+        err = self.loss.loss_error(out, label)
+        for layer in reversed(self.layers):
+            err = layer.backward_pass(err)
+
+    def sgd_step(self, input_, label, learning_rate):
+        """ Parameter gradient step based on errors."""
+        out = self.forward_pass(input_)
+        self.backward_pass(out, label)
+        for layer in self.layers:
+            layer.update_params(learning_rate)
+
+    def classification_error(self, input_, label):
+        """ Return whole-batch classification error (1-0 loss)."""
+        batch_size = label.shape[0]
+        out = self.forward_pass(input_)
+        return np.mean(
+            label[np.arange(batch_size), np.argmax(out, axis=1)])

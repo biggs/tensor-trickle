@@ -1,3 +1,4 @@
+""" layers.py: differentiable, trainable neural network layers."""
 import logging
 import numpy as np
 
@@ -5,56 +6,72 @@ from src.utils import np_str
 
 
 class Layer(object):
-  def forward_pass(self, A_prev):
-    raise NotImplementedError()
+    """ Abstract base class for differentiable, trainable layer."""
 
-  def backward_pass(self, E):
-    raise NotImplementedError()
+    def forward_pass(self, input_):
+        """ Forward pass returning and storing outputs."""
+        raise NotImplementedError()
 
-  def update_params(self,learning_rate):
-    pass
+    def backward_pass(self, back):
+        """ Backward pass returning and storing errors."""
+        raise NotImplementedError()
+
+    def update_params(self, learning_rate):
+        """ Update layer weights based on stored errors."""
+        raise NotImplementedError()
 
 
 
 class DenseLayer(Layer):
-  def __init__(self, no_units, input_size, activation):
-    """ Xavier initialisation for W, b to more standard zeros"""
-    xav = np.sqrt(6./(no_units+input_size))
-    self.W = np.random.uniform(
-      low=-xav, high=xav, size=(no_units,input_size))
-    self.b = np.zeros(no_units)
-    self.activation = activation
+    """ Fully connected neural network layer.
 
-  def forward_pass(self, forward):
-    """ Calculate and *store* forward pass
-    (using activation prev layer):
-    forward (batch_size x input_size) -> A (batch_size x no_units)
-    *Store*: forward, Z, Z_grad
+    Attributes:
+        weights: the matrix of weights for the layer [no_units, input_size]
+        bias: a bias vector [no_units,]
+        activation: an activation function object
+        input_: stored forward pass input [batch_size, input_size]
+        preactiv: stored forward pass output pre-activation [batch_size, no_units]
+        E: Calculated pre-activation error TODO? [batch_size, no_units]
     """
-    Z = forward @ self.W.T + self.b
-    logging.debug("Z = %s", np_str(Z))
 
-    self.forward = forward  # store input from prev layer
-    self.Z = Z  # store Z for this
-    self.Z_grad = self.activation.deriv(Z) # this layer activation grad
-    return self.activation.calc(Z)  # pass forward activation
+    def __init__(self, no_units, input_size, activation):
+        """ Xavier initialisation for weights, bias to more standard zeros."""
+        xav = np.sqrt(6. / (no_units+input_size))
+        self.weights = np.random.uniform(
+            low=-xav, high=xav, size=(no_units, input_size))
+        self.bias = np.zeros(no_units)
+        self.activation = activation()
 
-  def backward_pass(self, back):
-    """ *store* layer error and pass back error to previous layer
-    back (batch_size x no_units) -> new_back (batch_size x input_size)
-    """
-    E = back * self.Z_grad
-    self.E = E   # store this layer err
-    return E @ self.W  # to pass back further
+    def forward_pass(self, input_):
+        """ Calculate and store forward pass, returning output.
 
-  def update_params(self, learning_rate):
-    """ Uses stored self.err to update weights and biases
-    *Must run forward and backward passes first*
-    """
-    db = np.sum(self.E, axis=0)
-    dW = self.E.T @ self.forward
-    logging.debug("dW update =\n%s", np_str(dW))
-    logging.debug("db update =\n%s", np_str(db))
-    self.b -= learning_rate * db # no divide as def
-    self.W -= learning_rate * dW
+        Args:
+            input_: Layer input [batch_size, input_size]
 
+        Returns:
+            Layer output [batch_size, no_units]
+        """
+        self.input_ = input_
+        self.preactiv = input_ @ self.weights.T + self.bias
+        return self.activation.calc(self.preactiv)
+
+    def backward_pass(self, err):
+        """ Store layer error and return error of previous layer
+
+        Args:
+            err: Layer error passed back [batch_size, no_units]
+
+        Returns:
+            Layer input error [batch_size, input_size]
+        """
+        self.E = err * self.activation.deriv(self.preactiv)
+        return self.E @ self.weights
+
+    def update_params(self, learning_rate):
+        """ After passes use stored error to update weights and biases. """
+        d_bias = np.sum(self.E, axis=0)
+        d_weights = self.E.T @ self.input_    # no divide as def
+        logging.debug("weights update =\n%s", np_str(d_weights))
+        logging.debug("bias update =\n%s", np_str(d_bias))
+        self.bias -= learning_rate * d_bias
+        self.weights -= learning_rate * d_weights

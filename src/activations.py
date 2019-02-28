@@ -1,28 +1,34 @@
+""" activations.py: Activation functions for neural network layers."""
 import numpy as np
 
 
 class Activation(object):
-  def calc(self, Z):
-    raise NotImplementedError
+    """ Abstract class for differentiable activation."""
 
-  def deriv(self, Z):
-    raise NotImplementedError
+    def calc(self, preactiv):
+        """ Returns array after activation application."""
+        raise NotImplementedError
 
-
-class LinearActiv(Activation):
-  def calc(self, Z):
-    return Z
-
-  def deriv(self, Z):
-    return 1.
+    def deriv(self, preactiv):
+        """ Returns array activation derivative."""
+        raise NotImplementedError
 
 
-class ReluActiv(Activation):
-  def calc(self, Z):
-    return np.maximum(0, Z)
+class Linear(Activation):
+    """ Differentiable linear 'activation'."""
 
-  def deriv(self, Z):
-    return (Z > 0) * 1.
+    def calc(self, preactiv):
+        return preactiv
 
-relu = ReluActiv()
-linear = LinearActiv()
+    def deriv(self, preactiv):
+        return 1.
+
+
+class Relu(Activation):
+    """ Differentiable ReLu activation."""
+
+    def calc(self, preactiv):
+        return np.maximum(0, preactiv)
+
+    def deriv(self, preactiv):
+        return (preactiv > 0) * 1.

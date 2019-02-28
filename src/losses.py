@@ -1,31 +1,38 @@
+""" losses.py: neural network loss functions."""
 import numpy as np
 
+
+def softmax(array):
+    """ Stable softmax for numpy array."""
+    numer = np.exp(array - np.max(array, axis=1, keepdims=True))
+    return numer / np.sum(numer, axis=1, keepdims=True)
+
+
 class CrossEntropy(object):
-  """ Softmax + CrossEntropyLoss:
-  combine for implementation clarity
-  """
-  def softmax(self,in_vect):
-    """ Softmax a vector
-    (n,) -> (n,)
-    """
-    numer = np.exp(in_vect - np.max(in_vect, axis=1, keepdims=True))
-    return (numer / np.sum(numer, axis=1, keepdims=True))
+    """ Cross Entropy Loss."""
 
-  def calc(self, X, y_):
-    """ Actual loss from batch
-    made unusual choice to sum, not average, so LR scaled by batch size
-    X = (batch_size x input_size)
-    y_ = (batch_size x output_size) - 1-hot
-    -> loss
-    """
-    softX = self.softmax(X)
-    losses = softX * y_ # since 1-hot
-    return -np.log(np.sum(losses[:]))
+    def calc(self, input_, label):
+        """ Returns batch loss.
 
-  def loss_error(self, Z_L, y_):
-    """ Take the loss on the final scores and get errors to pass backward
-    Z_L = (batch_size x output_size)
-    y_ = (batch_size x output_size) - 1-hot
-    -> loss_error = (batch_size x output_size)
-    """
-    return self.softmax(Z_L) - y_
+        Args:
+            input_: [batch_size x input_size]
+            label: [batch_size x output_size] (1-hot)
+
+        Returns:
+            scalar cross-entropy loss, summed over batch
+            (scaling learning rate).
+        """
+        losses = softmax(input_) * label  # 1-hot
+        return -np.log(np.sum(losses[:]))
+
+    def loss_error(self, out, label):
+        """ Error to pass backward for training.
+
+        Args:
+            out: (batch_size x output_size)
+            label: (batch_size x output_size) - 1-hot
+
+        Returns:
+            the error loss to pass back [batch_size x output_size]
+        """
+        return softmax(out) - label
