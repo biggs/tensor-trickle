@@ -14,6 +14,7 @@ import src.datasets as datasets
 def mnist_model():
     """ Simple dense model for MNIST."""
     layers_ = [
+        layers.FlattenLayer((28, 28, 1)),
         layers.DenseLayer(32, 28*28, activations.Relu),
         layers.DenseLayer(32, 32, activations.Relu),
         layers.DenseLayer(10, 32, activations.Linear)
@@ -24,7 +25,7 @@ def mnist_model():
 
 def train_mnist(mnist_path, batch_size, learning_rate):
     """ Train a simple neural network to classify MNIST."""
-    data = datasets.MnistLoader(mnist_path)
+    data = datasets.MnistLoader(mnist_path, flatten=False)
     model = mnist_model()
 
     for i, (bxs, bys) in enumerate(data.train_batches(batch_size)):

@@ -36,9 +36,12 @@ def binarize(array):
 class MnistLoader(object):
     """ Load and pre-process MNIST."""
 
-    def __init__(self, data_path):
+    def __init__(self, data_path, flatten=True):
         """ Take in a path to (down)load data."""
         (train_x, train_y), (test_x, test_y) = mnist(data_path)
+        if not flatten:
+            train_x = train_x.reshape(-1, 28, 28, 1)
+            test_x = test_x.reshape(-1, 28, 28, 1)
         self.train = (binarize(train_x), one_hot(train_y))
         self.test = (binarize(test_x), one_hot(test_y))
         self.batch_size = 0
