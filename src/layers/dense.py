@@ -1,24 +1,8 @@
-""" layers.py: differentiable, trainable neural network layers."""
 import logging
 import numpy as np
 
+from src.layers.base import Layer
 from src.utils import np_str
-
-
-class Layer(object):
-    """ Abstract base class for differentiable, trainable layer."""
-
-    def forward_pass(self, input_):
-        """ Forward pass returning and storing outputs."""
-        raise NotImplementedError()
-
-    def backward_pass(self, err):
-        """ Backward pass returning and storing errors."""
-        raise NotImplementedError()
-
-    def update_params(self, learning_rate):
-        """ Update layer weights based on stored errors."""
-        raise NotImplementedError()
 
 
 
