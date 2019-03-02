@@ -14,8 +14,12 @@ import src.datasets as datasets
 def mnist_model():
     """ Simple dense model for MNIST."""
     layers_ = [
-        layers.FlattenLayer((28, 28, 1)),
-        layers.DenseLayer(32, 28*28, activations.Relu),
+        layers.ConvolutionalLayer(1, 3),
+        layers.MaxPoolLayer(),
+        layers.ConvolutionalLayer(3, 8),
+        layers.MaxPoolLayer(),
+        layers.FlattenLayer((7, 7, 8)),
+        layers.DenseLayer(32, 7*7*8, activations.Relu),
         layers.DenseLayer(32, 32, activations.Relu),
         layers.DenseLayer(10, 32, activations.Linear)
     ]
