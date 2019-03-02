@@ -15,7 +15,7 @@ class DenseLayer(Layer):
         activation: an activation function object
         input_: stored forward pass input [batch_size, input_size]
         preactiv: stored pre-activation output [batch_size, no_units]
-        E: Calculated pre-activation error TODO? [batch_size, no_units]
+        preact_err: Calculated pre-activation error [batch_size, no_units]
     """
 
     def __init__(self, no_units, input_size, activation):
@@ -48,14 +48,10 @@ class DenseLayer(Layer):
         Returns:
             Layer input error [batch_size, input_size]
         """
-        self.E = err * self.activation.deriv(self.preactiv)
-        return self.E @ self.weights
+        self.preact_err = err * self.activation.deriv(self.preactiv)
+        return self.preact_err @ self.weights
 
     def update_params(self, learning_rate):
         """ After passes use stored error to update weights and biases. """
-        d_bias = np.sum(self.E, axis=0)
-        d_weights = self.E.T @ self.input_    # no divide as def
-        logging.debug("weights update =\n%s", np_str(d_weights))
-        logging.debug("bias update =\n%s", np_str(d_bias))
-        self.bias -= learning_rate * d_bias
-        self.weights -= learning_rate * d_weights
+        self.bias -= learning_rate * np.sum(self.preact_err, axis=0)
+        self.weights -= learning_rate * self.preact_err.T @ self.input_  # No divide.

@@ -35,10 +35,14 @@ def train_mnist(mnist_path, batch_size, learning_rate):
             acc = model.classification_error(*data.test)
             print(f"Iteration {i} Test Accuracy: {acc:7.3f}")
 
+        if i >= 800:
+            print("Finished.")
+            return
+
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
-    BATCH_SIZE = 128
+    BATCH_SIZE = 16
     LEARNING_RATE = 0.001
     DATA_PATH = "~/data"
     train_mnist(DATA_PATH, BATCH_SIZE, LEARNING_RATE)
