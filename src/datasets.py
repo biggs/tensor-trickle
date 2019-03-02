@@ -45,6 +45,7 @@ class MnistLoader(object):
         self.train = (binarize(train_x), one_hot(train_y))
         self.test = (binarize(test_x), one_hot(test_y))
         self.batch_size = 0
+        self.epoch_size = train_y.shape[0]
 
     def train_batches(self, batch_size):
         """ Return batch generator of batch_size."""

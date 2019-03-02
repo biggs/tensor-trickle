@@ -14,9 +14,9 @@ import src.datasets as datasets
 def mnist_model():
     """ Simple dense model for MNIST."""
     layers_ = [
-        layers.ConvolutionalLayer(1, 3),
+        layers.ConvolutionalLayer(1, 8),
         layers.MaxPoolLayer(),
-        layers.ConvolutionalLayer(3, 8),
+        layers.ConvolutionalLayer(8, 8),
         layers.MaxPoolLayer(),
         layers.FlattenLayer((7, 7, 8)),
         layers.DenseLayer(32, 7*7*8, activations.Relu),
@@ -39,14 +39,12 @@ def train_mnist(mnist_path, batch_size, learning_rate):
             acc = model.classification_error(*data.test)
             print(f"Iteration {i} Test Accuracy: {acc:7.3f}")
 
-        if i >= 800:
-            print("Finished.")
+        if i >= 10 * data.epoch_size / batch_size:   # 10 epochs.
             return
 
 
 if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stderr, level=logging.WARNING)
-    BATCH_SIZE = 16
+    BATCH_SIZE = 100
     LEARNING_RATE = 0.001
     DATA_PATH = "~/data"
     train_mnist(DATA_PATH, BATCH_SIZE, LEARNING_RATE)
