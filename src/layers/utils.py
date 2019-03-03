@@ -1,3 +1,4 @@
+""" utils.py: Utilities for convolution and pooling."""
 import numpy as np
 
 
