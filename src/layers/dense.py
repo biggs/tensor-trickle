@@ -2,7 +2,6 @@ import logging
 import numpy as np
 
 from src.layers.base import Layer
-from src.utils import np_str
 
 
 

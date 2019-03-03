@@ -1,6 +1,5 @@
 import numpy as np
 from src.layers.base import Layer
-from src.utils import np_str
 from src.layers.utils import max_pool
 from src.layers.utils import max_pool_indices
 from src.layers.utils import distribute_to_indices

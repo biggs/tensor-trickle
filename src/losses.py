@@ -29,8 +29,8 @@ class CrossEntropy(object):
         """ Error to pass backward for training.
 
         Args:
-            out: (batch_size x output_size)
-            label: (batch_size x output_size) - 1-hot
+            out: [batch_size x output_size]
+            label: [batch_size x output_size] - 1-hot
 
         Returns:
             the error loss to pass back [batch_size x output_size]
