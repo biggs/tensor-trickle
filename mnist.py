@@ -1,7 +1,4 @@
 """ mnist.py: Simple example neural network trained on MNIST."""
-import sys
-import logging
-
 import numpy as np
 
 import src.activations as activations
@@ -33,9 +30,9 @@ def train_mnist(mnist_path, batch_size, learning_rate):
     model = mnist_model()
 
     for i, (bxs, bys) in enumerate(data.train_batches(batch_size)):
-        model.sgd_step(bxs, bys, learning_rate)
+        model.gradient_step(bxs, bys, learning_rate)
 
-        if i % 200 == 0:
+        if i % 50 == 0:
             acc = model.classification_error(*data.test)
             print(f"Iteration {i} Test Accuracy: {acc:7.3f}")
 

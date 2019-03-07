@@ -4,6 +4,7 @@ import numpy as np
 
 def softmax(array):
     """ Stable softmax for numpy array."""
+    # Use common trick to avoid underflow.
     numer = np.exp(array - np.max(array, axis=1, keepdims=True))
     return numer / np.sum(numer, axis=1, keepdims=True)
 

@@ -39,7 +39,7 @@ class Network(object):
         for layer in reversed(self.layers):
             err = layer.backward_pass(err)
 
-    def sgd_step(self, input_, label, learning_rate):
+    def gradient_step(self, input_, label, learning_rate):
         """ Parameter gradient step based on errors."""
         out = self.forward_pass(input_)
         self.backward_pass(out, label)
