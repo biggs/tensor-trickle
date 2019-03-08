@@ -1,3 +1,4 @@
+""" dense.py: Dense neural network layer."""
 import logging
 import numpy as np
 

@@ -1,3 +1,4 @@
+""" flatten.py: Flattening neural network layer."""
 from src.layers.base import Layer
 
 

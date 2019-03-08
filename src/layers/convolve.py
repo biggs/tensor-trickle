@@ -5,7 +5,6 @@ from src.layers.utils import convolve_3x3
 from src.layers.utils import get_3x3_patches
 
 
-
 class ConvolutionalLayer(Layer):
     """ 3x3 Convolutional layer with stride of 1.
 
@@ -54,4 +53,3 @@ class ConvolutionalLayer(Layer):
         input_patches = get_3x3_patches(self.input_)
         grad = np.einsum("nwhabc,nwhd->abcd", input_patches, self.err)
         self.weights -= learning_rate * grad
-

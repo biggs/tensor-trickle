@@ -10,6 +10,7 @@ import src.datasets as datasets
 
 def mnist_model():
     """ Simple dense model for MNIST."""
+    # Note that the layer input/output sizes must match.
     layers_ = [
         layers.ConvolutionalLayer(1, 8),
         layers.MaxPoolLayer(),

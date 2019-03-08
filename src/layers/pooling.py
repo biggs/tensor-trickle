@@ -1,3 +1,4 @@
+""" pooling.py: Pooling neural network layers."""
 import numpy as np
 from src.layers.base import Layer
 from src.layers.utils import max_pool
